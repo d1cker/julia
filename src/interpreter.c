@@ -386,6 +386,8 @@ jl_sym_t *get_sym_or_global_if_const(jl_value_t *arg)
         if (!jl_is_symbol(jl_quotenode_value(arg)))
             return NULL;
         return (jl_sym_t*)jl_quotenode_value(arg);
+    } else {
+        return NULL;
     }
 }
 
@@ -589,8 +591,9 @@ SECT_INTERP jl_value_t *eval_value(jl_value_t *e, interpreter_state *s)
 #ifdef _OS_EMSCRIPTEN_
             jl_value_t **ev_args;
             JL_GC_PUSHARGS(ev_args, nargs-5);
-            for (int i = 5; i < nargs; ++i)
+            for (int i = 5; i < nargs; ++i) {
                 ev_args[i-5] = eval_value(args[i], s);
+            }
             jl_value_t *result =
                 jl_do_jscall(libname ? jl_symbol_name(libname) : NULL,
                             jl_symbol_name(fname),
